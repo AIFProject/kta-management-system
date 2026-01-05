@@ -8,8 +8,6 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 INPUT_DIR = BASE_DIR / "data" / "sample"
 OUTPUT_DIR = BASE_DIR / "data" / "validated"
 
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
 REQUIRED_COLUMNS = [
     "nama_lengkap",
     "jenis_kelamin",
@@ -21,6 +19,7 @@ REQUIRED_COLUMNS = [
 
 VALID_ORGANIZATIONS = ["IPNU", "IPPNU"]
 VALID_GENDERS = ["L", "P"]
+
 
 # ======= Helper Functions =======
 def is_valid_date(date_str):
@@ -62,43 +61,51 @@ def validate_row(row):
     return errors
 
 
-# ======= Main Validation Logic =======
-print("Membaca data dari:", INPUT_DIR.resolve())
+# ======= MAIN FUNCTION (INI YANG DIPANGGIL CLI) =======
+def validate_members():
+    print("Membaca data dari:", INPUT_DIR.resolve())
 
-all_data = []
-for file in INPUT_DIR.glob("*.csv"):
-    print("Reading:", file.name)
-    df = pd.read_csv(file)
-    df["source_file"] = file.name
-    all_data.append(df)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-if not all_data:
-    raise ValueError(f"Tidak ada file CSV ditemukan di {INPUT_DIR}")
+    all_data = []
+    for file in INPUT_DIR.glob("*.csv"):
+        print("Reading:", file.name)
+        df = pd.read_csv(file)
+        df["source_file"] = file.name
+        all_data.append(df)
 
-data = pd.concat(all_data, ignore_index=True)
+    if not all_data:
+        raise ValueError(f"Tidak ada file CSV ditemukan di {INPUT_DIR}")
 
-# Validate Data
-validation_results = []
-for _, row in data.iterrows():
-    errors = validate_row(row)
-    validation_results.append(
-        "valid" if not errors else "invalid: " + "; ".join(errors)
+    data = pd.concat(all_data, ignore_index=True)
+
+    # ===== Validate Data =====
+    validation_results = []
+    for _, row in data.iterrows():
+        errors = validate_row(row)
+        validation_results.append(
+            "valid" if not errors else "invalid: " + "; ".join(errors)
+        )
+
+    data["validation_result"] = validation_results
+
+    # ===== Detect duplicates =====
+    data["duplicate_key"] = (
+        data["nama_lengkap"].str.lower().str.strip()
+        + "_"
+        + data["tanggal_lahir"].astype(str)
     )
 
-data["validation_result"] = validation_results
+    duplicates = data.duplicated("duplicate_key", keep=False)
+    data.loc[duplicates, "validation_result"] = "invalid: duplikat data"
 
-# Detect duplicates
-data["duplicate_key"] = (
-    data["nama_lengkap"].str.lower().str.strip()
-    + "_"
-    + data["tanggal_lahir"].astype(str)
-)
+    # ===== Save Output =====
+    output_file = OUTPUT_DIR / "validated_members.csv"
+    data.drop(columns=["duplicate_key"]).to_csv(output_file, index=False)
 
-duplicates = data.duplicated("duplicate_key", keep=False)
-data.loc[duplicates, "validation_result"] = "invalid: duplikat data"
+    print(f"✅ Validasi selesai. File disimpan di {output_file}")
 
-# Save Validated Data
-output_file = OUTPUT_DIR / "validated_members.csv"
-data.drop(columns=["duplicate_key"]).to_csv(output_file, index=False)
 
-print(f"✅ Validasi selesai. File disimpan di {output_file}")
+# ======= ENTRY POINT =======
+if __name__ == "__main__":
+    validate_members()

@@ -1,0 +1,7 @@
+nama_lengkap,jenis_kelamin,tempat_lahir,tanggal_lahir,organisasi,ranting,alamat,no_hp,tahun_masuk,source_file,validation_result
+Ahmad Fauzi,L,Banyuwangi,2004-08-17,IPNU,Purwoagung,Ds. Krajan RT 03 RW 02,81234567890,2022,sample_ranting_purwoasri.csv,invalid: duplikat data
+Nurul Hidayah,P,Banyuwangi,2004-02-30,IPPNU,Purwoagung,Ds. Purwo RT 04 RW 01,84567890123,2020,sample_ranting_purwoasri.csv,invalid: tanggal_lahir tidak valid
+Budi Santoso,L,Banyuwangi,2006-01-12,IPPNU,Purwoagung,Ds. Purwo RT 02 RW 05,85678901234,2024,sample_ranting_purwoasri.csv,invalid: jenis_kelamin harus 'P' untuk organisasi IPPNU
+Ahmad Fauzi,L,Banyuwangi,2004-08-17,IPNU,Tegaldlimo,Ds. Kalipait RT 02 RW 01,81234567890,2022,sample_ranting_tegaldlimo.csv,invalid: duplikat data
+Muhammad Rizki,L,Banyuwangi,2003-05-10,IPNU,Tegaldlimo,Ds. Sumbermulyo RT 05 RW 08,82345678901,2021,sample_ranting_tegaldlimo.csv,valid
+Siti Aisyah,P,Banyuwangi,2005-11-02,IPPNU,Tegaldlimo,Ds. Tegaldlimo RT 01 RW 03,83456789012,2023,sample_ranting_tegaldlimo.csv,valid
