@@ -5,9 +5,9 @@
 __pycache__/
 *.pyc
 
-# data real
-data/raw/*.csv
-data/raw/*.xlsx
+data/raw/
+data/validated/
+data/ready_for_kta/
 
 # os generated files
 .vscode/
